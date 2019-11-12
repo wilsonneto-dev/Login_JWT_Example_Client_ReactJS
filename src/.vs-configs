@@ -1,0 +1,47 @@
+{
+    "workbench.colorTheme": "Dracula",
+    "sync.gist": "fb0ecbd9c9d6c4be2f46b643d11cdbc8",
+    "editor.fontSize": 17,
+    "editor.lineHeight": 20,
+    "files.eol": "\n",
+    "editor.fontFamily": "Fira Code",
+    "editor.fontLigatures": true,
+
+    "editor.quickSuggestions": false,
+    "editor.suggestOnTriggerCharacters": false,
+
+    // Set the default
+    /* "'editor.formatOnSave": false,
+    "editor.formatOnSave": true, */
+    "emmet.includeLanguages": {
+        "javascript": "javascriptreact"
+    },
+    "prettier.esLintIntegration": true,
+    "workbench.iconTheme": "vscode-great-icons",
+    "prettier.singleQuote": true,
+    "[javascript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.tabSize": 2,
+        "editor.formatOnSave": true
+    },
+    "window.zoomLevel": 0,
+    "[json]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[html]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.formatOnSave": true,
+        "editor.tabSize": 2,
+    },
+    "[scss]":{
+        "editor.formatOnSave": true,
+        "editor.tabSize": 2,
+    },
+    "javascript.updateImportsOnFileMove.enabled": "never",
+    "editor.rulers": [
+        80,
+        100,
+        120
+    ],
+    "search.location": "panel"
+}
