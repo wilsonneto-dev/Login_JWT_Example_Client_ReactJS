@@ -1,4 +1,5 @@
-import React, { Component } from "react";
+import React, { Component } from 'react';
+import clsx from 'clsx';
 
 import {
   Container,
@@ -11,105 +12,188 @@ import {
   Link,
   Grid,
   Box,
-  LockOutlinedIcon,
-  Typography
-} from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+  Fab,
+  Typography,
+  CircularProgress
+} from '@material-ui/core';
+
+import Snackbar from '@material-ui/core/Snackbar';
+import SnackMessage from '../../components/SnackMessage';
+
+import IconAccount from '@material-ui/icons/AccountBox';
+import IconCheck from '@material-ui/icons/Check';
+
+import { withStyles } from '@material-ui/core/styles';
+import style from './style';
 
 class SignUp extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      name: '',
+      email: '',
+      pass: '',
+      passConfirm: '',
+      loading: false,
+      success: false,
+      message: ''
+    };
+  }
+
+  handleSubmit() {
+    this.setState({
+      loading: true
+    });
+
+    setTimeout(() => {
+      this.setState({
+        loading: false,
+        success: false,
+        message: 'erro askkassakjs'
+      });
+    }, 2000);
+  }
+
   render() {
+    const { classes } = this.props;
+    const { loading, success, message } = this.state;
+
     return (
       <Container component="main" maxWidth="xs">
         <CssBaseline />
-        <div>
-          <Avatar>
-            <LockOutlinedIcon />
-          </Avatar>
+        <div className={classes.paper}>
+          <div className={classes.fabProgressWrapper}>
+            <Fab
+              aria-label="save"
+              color="primary"
+              className={clsx(success && classes.green)}
+            >
+              {success ? <IconCheck /> : <IconAccount />}
+            </Fab>
+            {loading && (
+              <CircularProgress size={68} className={classes.fabProgress} />
+            )}
+          </div>
+
+          {message && (
+            <>
+              <SnackMessage
+                onClose={() => {}}
+                variant="error"
+                message={message}
+                hidden={true}
+                style={{ marginTop: 25, marginBottom: 25 }}
+              />
+              <Snackbar
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'left'
+                }}
+                open={true}
+                autoHideDuration={2000}
+                onClose={() => {}}
+              >
+                <SnackMessage
+                  onClose={() => {}}
+                  variant="error"
+                  message={message}
+                  hidden={true}
+                  style={{ marginTop: 25, marginBottom: 25 }}
+                />
+              </Snackbar>
+            </>
+          )}
+
           <Typography component="h1" variant="h5">
-            Sign up
+            Cadastre-se
           </Typography>
-          <form noValidate>
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  autoComplete="fname"
-                  name="firstName"
-                  variant="outlined"
-                  required
-                  fullWidth
-                  id="firstName"
-                  label="First Name"
-                  autoFocus
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  variant="outlined"
-                  required
-                  fullWidth
-                  id="lastName"
-                  label="Last Name"
-                  name="lastName"
-                  autoComplete="lname"
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  variant="outlined"
-                  required
-                  fullWidth
-                  id="email"
-                  label="Email Address"
-                  name="email"
-                  autoComplete="email"
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  variant="outlined"
-                  required
-                  fullWidth
-                  name="password"
-                  label="Password"
-                  type="password"
-                  id="password"
-                  autoComplete="current-password"
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <FormControlLabel
-                  control={
-                    <Checkbox value="allowExtraEmails" color="primary" />
-                  }
-                  label="I want to receive inspiration, marketing promotions and updates via email."
-                />
-              </Grid>
-            </Grid>
-            <Button type="submit" fullWidth variant="contained" color="primary">
-              Sign Up
+          <form
+            className={classes.form}
+            onSubmit={e => {
+              e.preventDefault();
+              this.handleSubmit();
+            }}
+          >
+            <TextField
+              variant="outlined"
+              margin="normal"
+              required
+              fullWidth
+              id="name"
+              label="Nome"
+              name="name"
+              autoComplete="name"
+              autoFocus
+              value={this.state.name}
+              onChange={e => this.setState({ name: e.target.value })}
+            />
+            <TextField
+              variant="outlined"
+              margin="normal"
+              required
+              fullWidth
+              id="email"
+              label={`Seu e-mail ${this.state.email}`}
+              name="email"
+              autoComplete="email"
+              autoFocus
+              value={this.state.email}
+              onChange={e => this.setState({ email: e.target.value })}
+            />
+            <TextField
+              variant="outlined"
+              margin="normal"
+              required
+              fullWidth
+              name="pass"
+              label="Senha"
+              type="password"
+              id="pass"
+              autoComplete="current-password"
+              value={this.state.pass}
+              onChange={e => this.setState({ pass: e.target.value })}
+            />
+            <TextField
+              variant="outlined"
+              margin="normal"
+              required
+              fullWidth
+              name="passConfirm"
+              label="Confirme a Senha"
+              type="password"
+              id="passConfirm"
+              autoComplete="current-password"
+              value={this.state.passConfirm}
+              onChange={e => this.setState({ passConfirm: e.target.value })}
+            />
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              color="primary"
+              className={classes.submit}
+              disabled={loading || success}
+            >
+              {loading ? (
+                <CircularProgress size={20} color="white" />
+              ) : (
+                'Me Cadastrar'
+              )}
             </Button>
-            <Grid container justify="flex-end">
+            <Grid container>
+              <Grid item xs></Grid>
               <Grid item>
-                <Link href="#" variant="body2">
-                  Already have an account? Sign in
+                <Link href="/sigin" variant="body2">
+                  Já possui uma conta? Faça Login
                 </Link>
               </Grid>
             </Grid>
           </form>
         </div>
-        <Box mt={5}>
-          <Typography variant="body2" color="textSecondary" align="center">
-            {"Copyright © "}
-            <Link color="inherit" href="https://material-ui.com/">
-              Your Website
-            </Link>{" "}
-            {new Date().getFullYear()}
-            {"."}
-          </Typography>
-        </Box>
       </Container>
     );
   }
 }
 
-export default SignUp;
+export default withStyles(style)(SignUp);
