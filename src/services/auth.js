@@ -1,14 +1,23 @@
-export const TOKEN_KEY = '@auth';
-export const REFRESH_TOKEN_KEY = '@auth';
+const authService = {
+  TOKEN_KEY: "@auth",
+  REFRESH_TOKEN_KEY: "@refresh-auth",
 
-export const isAuthenticated = () => localStorage.getItem(TOKEN_KEY) !== null;
+  isAuthenticated: () => localStorage.getItem(this.TOKEN_KEY) !== null,
 
-export const getToken = () => localStorage.getItem(TOKEN_KEY);
+  getToken: () => localStorage.getItem(this.TOKEN_KEY),
+  getRefreshToken: () => localStorage.getItem(this.REFRESH_TOKEN_KEY),
 
-export const login = token => {
-  localStorage.setItem(TOKEN_KEY, token);
+  storeToken: token => {
+    localStorage.setItem(this.TOKEN_KEY, token);
+  },
+  storeRefreshToken: refreshToken => {
+    localStorage.setItem(this.REFRESH_TOKEN_KEY, refreshToken);
+  },
+
+  logout: () => {
+    localStorage.removeItem(this.TOKEN_KEY);
+    localStorage.removeItem(this.REFRESH_TOKEN_KEY);
+  }
 };
 
-export const logout = () => {
-  localStorage.removeItem(TOKEN_KEY);
-};
+export default authService;
