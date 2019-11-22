@@ -1,5 +1,7 @@
-import React, { Component } from 'react';
-import clsx from 'clsx';
+import React, { Component } from "react";
+import clsx from "clsx";
+
+import api from "../../services/api";
 
 import {
   Container,
@@ -15,49 +17,69 @@ import {
   Fab,
   Typography,
   CircularProgress
-} from '@material-ui/core';
+} from "@material-ui/core";
 
-import Snackbar from '@material-ui/core/Snackbar';
-import SnackMessage from '../../components/SnackMessage';
+import Snackbar from "@material-ui/core/Snackbar";
+import SnackMessage from "../../components/SnackMessage";
 
-import IconAccount from '@material-ui/icons/AccountBox';
-import IconCheck from '@material-ui/icons/Check';
+import IconAccount from "@material-ui/icons/AccountBox";
+import IconCheck from "@material-ui/icons/Check";
 
-import { withStyles } from '@material-ui/core/styles';
-import style from './style';
+import { withStyles } from "@material-ui/core/styles";
+import style from "./style";
 
 class SignUp extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      name: '',
-      email: '',
-      pass: '',
-      passConfirm: '',
+      name: "",
+      email: "",
+      pass: "",
+      passConfirm: "",
       loading: false,
       success: false,
-      message: ''
+      message: "",
+      messageType: ""
     };
   }
 
-  handleSubmit() {
+  async handleSubmit() {
     this.setState({
       loading: true
     });
 
-    setTimeout(() => {
+    const { name, email, pass, passConfirm } = this.state;
+    if (pass !== passConfirm) {
       this.setState({
         loading: false,
         success: false,
-        message: 'erro askkassakjs'
+        messageType: "error",
+        message: "A senha e a confirmação não são iguais"
       });
-    }, 2000);
+      return;
+    }
+
+    const response = await api.post("/users", { name, email, pass });
+
+    const { success, message } = response.data;
+
+    this.setState({
+      loading: false,
+      success,
+      messageType: success ? "success" : "error",
+      message
+    });
+
+    if (success) {
+      const { history } = this.props;
+      history.push("/signin");
+    }
   }
 
   render() {
     const { classes } = this.props;
-    const { loading, success, message } = this.state;
+    const { loading, success, message, messageType } = this.state;
 
     return (
       <Container component="main" maxWidth="xs">
@@ -78,25 +100,20 @@ class SignUp extends Component {
 
           {message && (
             <>
-              <SnackMessage
-                onClose={() => {}}
-                variant="error"
-                message={message}
-                hidden={true}
-                style={{ marginTop: 25, marginBottom: 25 }}
-              />
               <Snackbar
                 anchorOrigin={{
-                  vertical: 'bottom',
-                  horizontal: 'left'
+                  vertical: "bottom",
+                  horizontal: "left"
                 }}
                 open={true}
                 autoHideDuration={2000}
                 onClose={() => {}}
               >
                 <SnackMessage
-                  onClose={() => {}}
-                  variant="error"
+                  onClose={() => {
+                    this.setState({ messageType: "", message: "" });
+                  }}
+                  variant={messageType}
                   message={message}
                   hidden={true}
                   style={{ marginTop: 25, marginBottom: 25 }}
@@ -134,7 +151,7 @@ class SignUp extends Component {
               required
               fullWidth
               id="email"
-              label={`Seu e-mail ${this.state.email}`}
+              label="Seu e-mail"
               name="email"
               autoComplete="email"
               autoFocus
@@ -176,9 +193,9 @@ class SignUp extends Component {
               disabled={loading || success}
             >
               {loading ? (
-                <CircularProgress size={20} color="white" />
+                <CircularProgress size={20} color="primary" />
               ) : (
-                'Me Cadastrar'
+                "Me Cadastrar"
               )}
             </Button>
             <Grid container>

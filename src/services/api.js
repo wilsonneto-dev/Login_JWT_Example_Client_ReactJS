@@ -4,7 +4,10 @@ import configVars from "../configs/config";
 import authService from "./auth";
 
 const api = axios.create({
-  baseURL: configVars.apiUrl
+  baseURL: configVars.apiUrl,
+  validateStatus: function() {
+    return true;
+  }
 });
 
 // insert token in requests
