@@ -1,7 +1,7 @@
-import React, { Component } from "react";
-import clsx from "clsx";
+import React, { Component } from 'react';
+import clsx from 'clsx';
 
-import api from "../../services/api";
+import api from '../../services/api';
 
 import {
   Container,
@@ -11,36 +11,37 @@ import {
   TextField,
   FormControlLabel,
   Checkbox,
-  Link,
   Grid,
   Box,
   Fab,
   Typography,
   CircularProgress
-} from "@material-ui/core";
+} from '@material-ui/core';
 
-import Snackbar from "@material-ui/core/Snackbar";
-import SnackMessage from "../../components/SnackMessage";
+import { Link } from 'react-router-dom';
 
-import IconAccount from "@material-ui/icons/AccountBox";
-import IconCheck from "@material-ui/icons/Check";
+import Snackbar from '@material-ui/core/Snackbar';
+import SnackMessage from '../../components/SnackMessage';
 
-import { withStyles } from "@material-ui/core/styles";
-import style from "./style";
+import IconAccount from '@material-ui/icons/AccountBox';
+import IconCheck from '@material-ui/icons/Check';
+
+import { withStyles } from '@material-ui/core/styles';
+import style from './style';
 
 class SignUp extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      name: "",
-      email: "",
-      pass: "",
-      passConfirm: "",
+      name: '',
+      email: '',
+      pass: '',
+      passConfirm: '',
       loading: false,
       success: false,
-      message: "",
-      messageType: ""
+      message: '',
+      messageType: ''
     };
   }
 
@@ -54,26 +55,31 @@ class SignUp extends Component {
       this.setState({
         loading: false,
         success: false,
-        messageType: "error",
-        message: "A senha e a confirmação não são iguais"
+        messageType: 'error',
+        message: 'A senha e a confirmação não são iguais'
       });
       return;
     }
 
-    const response = await api.post("/users", { name, email, pass });
+    const response = await api.post('/users', { name, email, pass });
 
     const { success, message } = response.data;
-
-    this.setState({
+    const newState = {
       loading: false,
       success,
-      messageType: success ? "success" : "error",
+      messageType: success ? 'success' : 'error',
       message
-    });
+    };
+
+    this.setState(newState);
 
     if (success) {
       const { history } = this.props;
-      history.push("/signin");
+      const nextPage = {
+        pathname: '/singin',
+        state: newState
+      };
+      history.push(nextPage);
     }
   }
 
@@ -102,8 +108,8 @@ class SignUp extends Component {
             <>
               <Snackbar
                 anchorOrigin={{
-                  vertical: "bottom",
-                  horizontal: "left"
+                  vertical: 'bottom',
+                  horizontal: 'left'
                 }}
                 open={true}
                 autoHideDuration={2000}
@@ -111,7 +117,7 @@ class SignUp extends Component {
               >
                 <SnackMessage
                   onClose={() => {
-                    this.setState({ messageType: "", message: "" });
+                    this.setState({ messageType: '', message: '' });
                   }}
                   variant={messageType}
                   message={message}
@@ -195,13 +201,13 @@ class SignUp extends Component {
               {loading ? (
                 <CircularProgress size={20} color="primary" />
               ) : (
-                "Me Cadastrar"
+                'Me Cadastrar'
               )}
             </Button>
             <Grid container>
               <Grid item xs></Grid>
               <Grid item>
-                <Link href="/sigin" variant="body2">
+                <Link to="/signin" variant="body2">
                   Já possui uma conta? Faça Login
                 </Link>
               </Grid>
