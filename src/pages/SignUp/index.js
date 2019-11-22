@@ -76,7 +76,7 @@ class SignUp extends Component {
     if (success) {
       const { history } = this.props;
       const nextPage = {
-        pathname: '/singin',
+        pathname: '/signin',
         state: newState
       };
       history.push(nextPage);

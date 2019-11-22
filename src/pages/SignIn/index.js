@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import clsx from 'clsx';
 
 import api from '../../services/api';
+import authService from '../../services/auth';
 
 import {
   Container,
@@ -39,8 +40,40 @@ class SignIn extends Component {
       loading: false,
       success: false,
       message: '',
-      messageType: ''
+      messageType: '',
+      refreshProcessing: false
     };
+  }
+
+  componentDidMount() {
+    const receivedState = this.props.location.state;
+    if (receivedState) {
+      const { message, messageType } = receivedState;
+      this.setState({ message, messageType });
+    }
+
+    if (authService.getRefreshToken()) {
+      this.handleRefresh();
+    }
+  }
+
+  async handleRefresh() {
+    this.setState({
+      loading: true,
+      refreshProcessing: true
+    });
+
+    const refreshToken = authService.getRefreshToken();
+    const response = await api.post(
+      '/auth/refresh',
+      {},
+      {
+        headers: {
+          'refresh-token': refreshToken
+        }
+      }
+    );
+    this.handleApiResponse(response);
   }
 
   async handleSubmit() {
@@ -61,32 +94,43 @@ class SignIn extends Component {
     }
 
     const response = await api.post('/auth/login', { email, pass });
+    this.handleApiResponse(response);
+  }
 
+  handleApiResponse(response) {
     const { success, message } = response.data;
     const newState = {
       loading: false,
       success,
       messageType: success ? 'success' : 'error',
-      message
+      message,
+      refreshProcessing: false
     };
 
     this.setState(newState);
 
     if (success) {
       const { token, refreshToken } = response.data;
-      console.log(response.data);
-      /* const { history } = this.props;
+      authService.storeTokens(token, refreshToken);
+
+      const { history } = this.props;
       const nextPage = {
-        pathname: '/singin',
+        pathname: '/app',
         state: newState
       };
-      history.push(nextPage); */
+      history.push(nextPage);
     }
   }
 
   render() {
     const { classes } = this.props;
-    const { loading, success, message, messageType } = this.state;
+    const {
+      loading,
+      success,
+      message,
+      messageType,
+      refreshProcessing
+    } = this.state;
 
     return (
       <Container component="main" maxWidth="xs">
@@ -129,63 +173,69 @@ class SignIn extends Component {
             </>
           )}
 
-          <Typography variant="h5">Acessar Conta</Typography>
-          <form
-            className={classes.form}
-            onSubmit={e => {
-              e.preventDefault();
-              this.handleSubmit();
-            }}
-          >
-            <TextField
-              variant="outlined"
-              margin="normal"
-              required
-              fullWidth
-              id="email"
-              label="e-mail"
-              name="email"
-              autoComplete="email"
-              autoFocus
-              value={this.state.email}
-              onChange={e => this.setState({ email: e.target.value })}
-            />
-            <TextField
-              variant="outlined"
-              margin="normal"
-              required
-              fullWidth
-              name="pass"
-              label="Senha"
-              type="password"
-              id="pass"
-              autoComplete="current-password"
-              value={this.state.pass}
-              onChange={e => this.setState({ pass: e.target.value })}
-            />
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              color="primary"
-              className={classes.submit}
-              disabled={loading || success}
-            >
-              {loading ? (
-                <CircularProgress size={20} color="primary" />
-              ) : (
-                'Acessar Conta'
-              )}
-            </Button>
-            <Grid container>
-              <Grid item xs></Grid>
-              <Grid item>
-                <Link to="/signup" variant="body2">
-                  <Typography>Criar Conta</Typography>
-                </Link>
-              </Grid>
-            </Grid>
-          </form>
+          {refreshProcessing == true ? (
+            <Typography variant="h5">Restaurando Sessão...</Typography>
+          ) : (
+            <>
+              <Typography variant="h5">Acessar Conta</Typography>
+              <form
+                className={classes.form}
+                onSubmit={e => {
+                  e.preventDefault();
+                  this.handleSubmit();
+                }}
+              >
+                <TextField
+                  variant="outlined"
+                  margin="normal"
+                  required
+                  fullWidth
+                  id="email"
+                  label="e-mail"
+                  name="email"
+                  autoComplete="email"
+                  autoFocus
+                  value={this.state.email}
+                  onChange={e => this.setState({ email: e.target.value })}
+                />
+                <TextField
+                  variant="outlined"
+                  margin="normal"
+                  required
+                  fullWidth
+                  name="pass"
+                  label="Senha"
+                  type="password"
+                  id="pass"
+                  autoComplete="current-password"
+                  value={this.state.pass}
+                  onChange={e => this.setState({ pass: e.target.value })}
+                />
+                <Button
+                  type="submit"
+                  fullWidth
+                  variant="contained"
+                  color="primary"
+                  className={classes.submit}
+                  disabled={loading || success}
+                >
+                  {loading ? (
+                    <CircularProgress size={20} color="primary" />
+                  ) : (
+                    'Acessar Conta'
+                  )}
+                </Button>
+                <Grid container>
+                  <Grid item xs></Grid>
+                  <Grid item>
+                    <Link to="/signup" variant="body2">
+                      <Typography>Criar Conta</Typography>
+                    </Link>
+                  </Grid>
+                </Grid>
+              </form>
+            </>
+          )}
         </div>
       </Container>
     );
